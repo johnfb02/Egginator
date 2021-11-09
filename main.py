@@ -1,4 +1,5 @@
 #!/usr/bin/env pybricks-micropython
+
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
                                  InfraredSensor, UltrasonicSensor, GyroSensor)
@@ -7,37 +8,72 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
+import math
 
-# This program requires LEGO EV3 MicroPython v2.0 or higher.
-# Click "Open user guide" on the EV3 extension tab for more information.
-
-# Create your objects here.
 ev3 = EV3Brick()
-motor1 = Motor(Port.A)
-motor2 = Motor(Port.B)
-motor3 = Motor(Port.C)
+x_motor = Motor(Port.A) # Rotates the ball
+z_motor = Motor(Port.B) # Raises/lowers the pen
+y_motor = Motor(Port.C) # Moves pen across ball
 
-# Write your program here.
+timer = StopWatch()
+
+def returnToStartingPoint(angle):
+    z_motor.run_until_stalled(70, duty_limit=50)
+    y_motor.run_until_stalled(100, duty_limit=40)
+    y_motor.reset_angle(0)
+    y_motor.run_angle(25, -1 * angle)
+    z_motor.reset_angle(0)
+    y_motor.reset_angle(0)
+    
+
+def raisePen():
+    z_motor.run_until_stalled(25, duty_limit=50)
+
+def lowerPen():
+    z_motor.run_until_stalled(-25, duty_limit=29)
+    z_motor.reset_angle(0)
+    z_motor.run_angle(25, 10)
+
 def startUp():
-    motor3.run_angle(100, -20)
-    motor2.run_angle(500, -625)
+    returnToStartingPoint(42.5)
+    
+def stop():
+    y_motor.stop()
+    x_motor.stop()
 
+def drawWave(amplitude, frequency):
+    lowerPen()
+    x_motor.dc(15)
+    x_motor.reset_angle(0)
+    while(x_motor.angle() < 362):
+        angle = math.cos(frequency * math.radians(x_motor.angle())) * amplitude
+        y_motor.run(angle)
+    stop()
+    raisePen()
+
+def drawLine():
+    lowerPen()
+    x_motor.reset_angle(0)
+    x_motor.run_angle(100, 365)
+    x_motor.reset_angle(0)
+    stop()
+    raisePen()
+
+def setAngle(angle):
+    y_motor.run_angle(100, angle)
 
 ev3.speaker.beep()
 
-print(motor1.angle())
-
+timer.reset()
 startUp()
-motor1.dc(20)
 
-while(motor1.angle() < 360):
-    motor3.run_angle(100, -65)
-    motor3.run_angle(100, 65)
+while timer.time() < 4000:
+    pass
 
-motor1.dc(0)
-motor2.run_angle(500, 625)
+setAngle(-20)
 
-
-print(motor1.angle())
+for i in range(2):
+    drawWave(90, 10)
+    setAngle(40)
 
 ev3.speaker.beep()
