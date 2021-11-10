@@ -15,27 +15,30 @@ x_motor = Motor(Port.A) # Rotates the ball
 z_motor = Motor(Port.B) # Raises/lowers the pen
 y_motor = Motor(Port.C) # Moves pen across ball
 
+startSpeed = 10
+topSpeed = 20
+
 timer = StopWatch()
 
 def returnToStartingPoint(angle):
-    z_motor.run_until_stalled(70, duty_limit=50)
+    z_motor.run_until_stalled(-70, duty_limit=50)
     y_motor.run_until_stalled(100, duty_limit=40)
     y_motor.reset_angle(0)
-    y_motor.run_angle(25, -1 * angle)
+    y_motor.run_angle(50, -1 * angle)
     z_motor.reset_angle(0)
     y_motor.reset_angle(0)
     
 
 def raisePen():
-    z_motor.run_until_stalled(25, duty_limit=50)
+    z_motor.run_until_stalled(-25, duty_limit=50)
 
 def lowerPen():
-    z_motor.run_until_stalled(-25, duty_limit=29)
+    z_motor.run_until_stalled(25, duty_limit=35)
     z_motor.reset_angle(0)
-    z_motor.run_angle(25, 10)
+    z_motor.run_angle(25, -12.5)
 
 def startUp():
-    returnToStartingPoint(42.5)
+    returnToStartingPoint(35)
     
 def stop():
     y_motor.stop()
@@ -43,9 +46,11 @@ def stop():
 
 def drawWave(amplitude, frequency):
     lowerPen()
-    x_motor.dc(15)
     x_motor.reset_angle(0)
-    while(x_motor.angle() < 362):
+    x_motor.dc(startSpeed)
+    while(x_motor.angle() < 360):
+        if x_motor.angle()+startSpeed < topSpeed: 
+            x_motor.dc(x_motor.angle()+startSpeed)  #Increase speed over time
         angle = math.cos(frequency * math.radians(x_motor.angle())) * amplitude
         y_motor.run(angle)
     stop()
@@ -62,6 +67,14 @@ def drawLine():
 def setAngle(angle):
     y_motor.run_angle(100, angle)
 
+#-------------Differnt egg-prints------------------#
+def printEgg1():
+    drawWave(60, 10)
+    setAngle(-15)
+    drawLine()
+    setAngle(30)
+    drawLine()
+
 ev3.speaker.beep()
 
 timer.reset()
@@ -70,10 +83,11 @@ startUp()
 while timer.time() < 4000:
     pass
 
-setAngle(-20)
+printEgg1()
 
-for i in range(2):
-    drawWave(90, 10)
-    setAngle(40)
+
+#for i in range(2):
+#    drawWave(90, 10)
+#    setAngle(40)
 
 ev3.speaker.beep()
