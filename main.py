@@ -55,6 +55,14 @@ def drawWave(amplitude, frequency):
         y_motor.run(angle)
     stop()
     raisePen()
+    
+def drawCircle(radius):
+    setAngle(radius)
+    lowerPen()
+    for a in range(360):
+        x_motor.run(math.sin(math.radians(a)))
+        y_motor.run(math.cos(math.radians(a)))
+    raisePen()
 
 def drawLine():
     lowerPen()
@@ -75,6 +83,7 @@ def printEgg1():
     setAngle(30)
     drawLine()
 
+
 ev3.speaker.beep()
 
 timer.reset()
@@ -83,11 +92,8 @@ startUp()
 while timer.time() < 4000:
     pass
 
-printEgg1()
+drawCircle(5)
 
-
-#for i in range(2):
-#    drawWave(90, 10)
-#    setAngle(40)
+#printEgg1()
 
 ev3.speaker.beep()
