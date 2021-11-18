@@ -15,6 +15,8 @@ x_motor = Motor(Port.A) # Rotates the ball
 z_motor = Motor(Port.B) # Raises/lowers the pen
 y_motor = Motor(Port.C) # Moves pen across ball
 
+button = TouchSensor(Port.S1) #Button
+
 startSpeed = 10
 topSpeed = 15
 
@@ -33,12 +35,14 @@ def raisePen():
     z_motor.run_until_stalled(-25, duty_limit=40)
 
 def lowerPen():
-    z_motor.run_until_stalled(25, duty_limit=37)
+    z_motor.run_until_stalled(25, duty_limit=40)
     z_motor.reset_angle(0)
     #z_motor.run_angle(25, -5)
 
 def startUp():
     returnToStartingPoint(35)
+    z_motor.reset_angle(0)
+    y_motor.reset_angle(0)
     
 def stop():
     y_motor.stop()
@@ -82,6 +86,15 @@ def drawThickLine():
     x_motor.reset_angle(0)
     stop()
     raisePen()
+    
+def drawYLine(n):
+    for i in range(n):
+        x_motor.run_angle(100, 360/n)
+        lowerPen()
+        y_motor.run_until_stalled(100, duty_limit=40)
+        y_motor.run_angle(100, -65)
+        raisePen()
+        
 
 def setAngle(angle):
     y_motor.run_angle(100, angle)
@@ -90,37 +103,56 @@ def setAngle(angle):
 def printEgg1():
     drawWave(120, 10)
     setAngle(-15)
-    drawLine()
+    drawThickLine()
     setAngle(30)
-    drawLine()
+    drawThickLine()
     
 def printEgg2():
     setAngle(30)
     for x in range(5):
-        drawLine()
+        drawThickLine()
         setAngle(-15)
         
 def printEgg3():
     setAngle(3)
     drawThickLine()
-    setAngle(-6)
+    while (not button.pressed()):
+        print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(-3)
     drawThickLine()
-    setAngle(-10)
+    while (not button.pressed()):
+        print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(-13)
     drawWave(75, 14)
-    setAngle(-5)
+    while (not button.pressed()):
+        print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(-18)
     drawThickLine()
-    setAngle(22)
+    while (not button.pressed()):
+        print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(10)
     drawWave(75, 14)
-    setAngle(5)
+    while (not button.pressed()):
+        print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(20)
     drawThickLine()
     
 def printEgg4():
-    setAngle(24)
-    for x in range(7):
+    angle = 24
+    for x in range(9):
+        setAngle(angle)
         drawThickLine()
-        setAngle(-8)
+        while (not button.pressed()):
+            print("Trykk knapp for å fortsette")
+        angle -= 8
+        startUp()
         
-def printEgg5():
+def printEgg5(): #Funker ikke ennå
     setAngle(20)
     lowerPen()
     drawThickLine()
@@ -129,7 +161,17 @@ def printEgg5():
     drawThickLine()
     stop()
     raisePen()
-    
+
+def printEgg6():
+    angle = 24
+    for x in range(8):
+        setAngle(angle)
+        drawThickLine()
+        angle -= 8
+        startUp()
+    while (not button.pressed()):
+            print("Trykk knapp for å fortsette")
+    drawYLine(24)
         
 #----------------Main-function-----------------#
 ev3.speaker.beep()
@@ -140,6 +182,6 @@ startUp()
 while timer.time() < 4000:
     pass
 
-printEgg5()
+printEgg2()
 
 ev3.speaker.beep()
