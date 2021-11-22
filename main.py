@@ -59,17 +59,6 @@ def drawWave(amplitude, frequency):
         y_motor.run(angle)
     stop()
     raisePen()
-    
-def drawCircle(radius):
-    #setAngle(radius)
-    lowerPen()
-    while(x_motor.angle() < radius*2):
-        x_motor.dc(10)
-        y_speed = (-x_motor.angle()-5)/(math.sqrt((-x_motor.angle()-5)**2 + radius**2))
-        y_motor.run(y_speed*radius)
-
-    stop()
-    raisePen()
 
 def drawLine():
     lowerPen()
@@ -87,12 +76,24 @@ def drawThickLine():
     stop()
     raisePen()
     
+def drawDottedLine(dots):
+    for i in range(dots):
+        x_motor.run_angle(100, 360/dots)
+        lowerPen()
+        raisePen()
+    
 def drawYLine(n):
-    for i in range(n):
+    lowerPen()
+    y_motor.run_angle(100, 20)
+    y_motor.run_angle(100, -50)
+    raisePen()
+    
+    for i in range(n-1):
         x_motor.run_angle(100, 360/n)
         lowerPen()
-        y_motor.run_until_stalled(100, duty_limit=40)
-        y_motor.run_angle(100, -65)
+        #y_motor.run_until_stalled(100, duty_limit=40)
+        y_motor.run_angle(100, 50)
+        y_motor.run_angle(100, -50)
         raisePen()
         
 
@@ -100,20 +101,23 @@ def setAngle(angle):
     y_motor.run_angle(100, angle)
 
 #-------------Differnt egg-prints------------------#
-def printEgg1():
+def printEgg1(): #To linjer med bølge mellom
     drawWave(120, 10)
-    setAngle(-15)
+    while (not button.pressed()):
+            print("Trykk knapp for å fortsette")
+    startUp()
+    setAngle(-25)
     drawThickLine()
-    setAngle(30)
+    setAngle(50)
     drawThickLine()
     
-def printEgg2():
+def printEgg2(): #Noen få tjukke linjer
     setAngle(30)
     for x in range(5):
         drawThickLine()
         setAngle(-15)
         
-def printEgg3():
+def printEgg3(): #Linjer med bølger mellom
     setAngle(3)
     drawThickLine()
     while (not button.pressed()):
@@ -142,9 +146,9 @@ def printEgg3():
     setAngle(20)
     drawThickLine()
     
-def printEgg4():
+def printEgg4(): #Linjer
     angle = 24
-    for x in range(9):
+    for x in range(8):
         setAngle(angle)
         drawThickLine()
         while (not button.pressed()):
@@ -162,7 +166,7 @@ def printEgg5(): #Funker ikke ennå
     stop()
     raisePen()
 
-def printEgg6():
+def printEgg6(): #Rutenett
     angle = 24
     for x in range(8):
         setAngle(angle)
@@ -172,6 +176,13 @@ def printEgg6():
     while (not button.pressed()):
             print("Trykk knapp for å fortsette")
     drawYLine(24)
+    
+def printEgg7(): #Flere prikkete linjer
+    setAngle(24)
+    for x in range(5):
+        drawDottedLine(30)
+        setAngle(-12)
+    
         
 #----------------Main-function-----------------#
 ev3.speaker.beep()
@@ -182,6 +193,6 @@ startUp()
 while timer.time() < 4000:
     pass
 
-printEgg2()
+drawDottedLine(40)
 
 ev3.speaker.beep()
