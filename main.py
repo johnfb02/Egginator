@@ -10,6 +10,11 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 
 import math
 
+"""
+
+    Initializing modules
+
+"""
 ev3 = EV3Brick()
 x_motor = Motor(Port.A) # Rotates the ball
 z_motor = Motor(Port.B) # Raises/lowers the pen
@@ -22,11 +27,17 @@ topSpeed = 15
 
 timer = StopWatch()
 
-def returnToStartingPoint(angle):
+"""
+
+    Utility-functions
+
+"""
+
+def returnToStartingPoint():
     z_motor.run_until_stalled(-70, duty_limit=50)
     y_motor.run_until_stalled(100, duty_limit=40)
     y_motor.reset_angle(0)
-    y_motor.run_angle(50, -1 * angle)
+    y_motor.run_angle(50, -35)
     z_motor.reset_angle(0)
     y_motor.reset_angle(0)
     
@@ -35,18 +46,24 @@ def raisePen():
     z_motor.run_until_stalled(-25, duty_limit=40)
 
 def lowerPen():
-    z_motor.run_until_stalled(25, duty_limit=40)
+    z_motor.run_until_stalled(25, duty_limit=45)
     z_motor.reset_angle(0)
     #z_motor.run_angle(25, -5)
 
 def startUp():
-    returnToStartingPoint(35)
+    returnToStartingPoint()
     z_motor.reset_angle(0)
     y_motor.reset_angle(0)
     
 def stop():
     y_motor.stop()
     x_motor.stop()
+
+"""
+
+    Draw-functions
+
+"""
 
 def drawWave(amplitude, frequency):
     lowerPen()
@@ -96,12 +113,26 @@ def drawYLine(n):
         y_motor.run_angle(100, -50)
         raisePen()
         
+def drawCircle(a):
+    lowerPen()
+    for angle in range(360):
+        x_motor.run(1.5 * a * math.sin(math.radians(angle)))
+        y_motor.run(a * math.cos(math.radians(angle)))
+        if angle is not 360:
+            wait(1)
+    stop()
+    raisePen()
 
 def setAngle(angle):
     y_motor.run_angle(100, angle)
 
-#-------------Differnt egg-prints------------------#
-def printEgg1(): #To linjer med bølge mellom
+"""
+
+    Egg prints
+
+"""
+#Wave with two lines outside of it
+def printEgg1():
     drawWave(120, 10)
     while (not button.pressed()):
             print("Trykk knapp for å fortsette")
@@ -111,13 +142,15 @@ def printEgg1(): #To linjer med bølge mellom
     setAngle(50)
     drawThickLine()
     
-def printEgg2(): #Noen få tjukke linjer
+#Five thick Lines
+def printEgg2():
     setAngle(30)
     for x in range(5):
         drawThickLine()
         setAngle(-15)
         
-def printEgg3(): #Linjer med bølger mellom
+#Lines with waves between
+def printEgg3(): 
     setAngle(3)
     drawThickLine()
     while (not button.pressed()):
@@ -146,7 +179,8 @@ def printEgg3(): #Linjer med bølger mellom
     setAngle(20)
     drawThickLine()
     
-def printEgg4(): #Linjer
+#Multiple lines
+def printEgg4():
     angle = 24
     for x in range(8):
         setAngle(angle)
@@ -156,17 +190,18 @@ def printEgg4(): #Linjer
         angle -= 8
         startUp()
         
+#Work in progress
 def printEgg5(): #Funker ikke ennå
-    setAngle(20)
+    setAngle(24)
+    drawThickLine()
+    x_motor.run(360)
     lowerPen()
-    drawThickLine()
-    y_motor.run(-10)
-    x_motor.run_angle(360, 1440)
-    drawThickLine()
+    y_motor.run_until_stalled(-12, duty_limit=40)
     stop()
-    raisePen()
+    drawThickLine()
 
-def printEgg6(): #Rutenett
+#Grid
+def printEgg6():
     angle = 24
     for x in range(8):
         setAngle(angle)
@@ -177,14 +212,29 @@ def printEgg6(): #Rutenett
             print("Trykk knapp for å fortsette")
     drawYLine(24)
     
-def printEgg7(): #Flere prikkete linjer
-    setAngle(24)
-    for x in range(5):
-        drawDottedLine(30)
-        setAngle(-12)
+#Multiple dotted lines
+def printEgg7(): 
+    setAngle(20)
+    for x in range(2):
+        drawThickLine()             
+        setAngle(-10)
+        print("Next line")
+        
+    drawDottedLine(30)              
+    setAngle(-10)
+    print("Next line")
+    
+    for x in range(2):
+        drawThickLine()             
+        setAngle(-10)
+        print("Next line")
     
         
-#----------------Main-function-----------------#
+"""
+
+    Main run
+
+"""
 ev3.speaker.beep()
 
 timer.reset()
@@ -193,6 +243,12 @@ startUp()
 while timer.time() < 4000:
     pass
 
-drawDottedLine(40)
+#n = 8
+#for i in range(n):
+#    drawCircle(150)
+#    returnToStartingPoint()
+#    x_motor.run_angle(100, 360/n)
+
+printEgg6()
 
 ev3.speaker.beep()
