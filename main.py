@@ -1,5 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 
+
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
                                  InfraredSensor, UltrasonicSensor, GyroSensor)
@@ -144,10 +145,10 @@ def printEgg1():
     
 #Five thick Lines
 def printEgg2():
-    setAngle(30)
+    setAngle(24)
     for x in range(5):
         drawThickLine()
-        setAngle(-15)
+        setAngle(-12)
         
 #Lines with waves between
 def printEgg3(): 
@@ -171,7 +172,7 @@ def printEgg3():
     while (not button.pressed()):
         print("Trykk knapp for å fortsette")
     startUp()
-    setAngle(10)
+    setAngle(5)
     drawWave(75, 14)
     while (not button.pressed()):
         print("Trykk knapp for å fortsette")
@@ -212,7 +213,7 @@ def printEgg6():
             print("Trykk knapp for å fortsette")
     drawYLine(24)
     
-#Multiple dotted lines
+#Thick lines and dotted line
 def printEgg7(): 
     setAngle(20)
     for x in range(2):
@@ -228,7 +229,12 @@ def printEgg7():
         drawThickLine()             
         setAngle(-10)
         print("Next line")
-    
+        
+def printEgg8():
+    setAngle(24)
+    for x in range(48):
+        drawThickLine()
+        setAngle(-1)
         
 """
 
@@ -249,6 +255,6 @@ while timer.time() < 4000:
 #    returnToStartingPoint()
 #    x_motor.run_angle(100, 360/n)
 
-printEgg6()
+printEgg1()
 
 ev3.speaker.beep()
